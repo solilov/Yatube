@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br>
+    <h1>
+    {% if edit %}
+        Редактировать запись
+    {% else %}
+        Добавить запись
+    {% endif %}
+    </h1>
+    <br>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in  form %}
+          <p class="dline">
+              {{ field }}
+            </p>
+        {% endfor %}
+        {% if edit %}
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        {% else %}
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        {% endif %}
+    </form>
+{% endblock %}

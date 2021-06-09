@@ -1,0 +1,48 @@
+<!-- templates/about/author.html -->
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block content %}
+{% load user_filters %}
+  <main role="main" class="container">
+    <div class="row">
+      <!-- Левый вспомогательный блок -->
+      <div class="col-md-3 mb-3 mt-1">
+        <div class="card">
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="h4">
+                  <img src="{% static 'img/1.png' %}" width="165" height="185">
+                  Солилов А.В.
+                </div> 
+              </li>
+              <li class="list-group-item">
+                <div class="h6 text-muted">
+                  <p>возраст: 30 лет</p>
+                  <p>рост: 191 см</p>
+                </div>
+              </li>
+            </ul>                                               
+          </div>                    
+        </div>                
+      </div>
+      <!-- Тело страницы -->
+      <div class="col-md-9">
+        <div class="card-body">                    
+          <div class="card-text">
+            <br>
+            <p>Зовут меня Саша.</p> 
+            <p>Увлекаюсь многими вещами от спинниговой ловли
+              до велопокатушек. <br>
+              В этому году с другом хотим проехать почти
+              300 км до Ярославля. </p> 
+              <p>Так же наконец-то начал учиться программированию(давно хотел,
+                но постоянно находил для себя какие-то оправдания)</p>
+            </p>
+          </div>                    
+        </div>                
+      </div>            
+    </div>        
+  </main>
+{% endblock %}

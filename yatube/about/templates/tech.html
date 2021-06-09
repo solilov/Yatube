@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block content %}
+{% load user_filters %}
+  <main role="main" class="container">
+    <div class="row">
+      <!-- Левый вспомогательный блок -->
+      <div class="col-md-3 mb-3 mt-1">
+        <div class="card">
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="h5">
+                  Используемые технологии
+                </div> 
+              </li>
+              <li class="list-group-item">
+                <div class="h6 text-muted">
+                  <ul>
+                    <li>Python 3.7.10</li>
+                    <li>Django 2.2.19</li>
+                    <li>pytest-django 3.8.0</li>
+                    <li>six 1.15.0</li>
+                    <li>pytest-pythonpath 0.7.3</li>
+                    <li>pytest-freezegun 0.4.2</li>
+                  </ul>
+                </div>
+              </li>
+            </ul>                                               
+          </div>                    
+        </div>                
+      </div>
+      <!-- Тело страницы -->
+      <div class="col-md-9">
+        <div class="card-body">                    
+          <div class="card-text">
+            <p>Обучение дается сложно, поэтому нужно еще больше усидчивости</p>
+            <p>Технологии, что описал, я только начал изучать. <br>Надеюсь дальше знаний и скиллов будет больше.</p>
+            <p></p>
+          </div>                    
+        </div>                
+      </div>            
+    </div>        
+  </main>
+{% endblock %}
