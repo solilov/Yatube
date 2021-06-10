@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %}Страница поста. Автор {{ author.username }}{% endblock %}
 {% block content %}
 <main role="main" class="container">
     <div class="row">
@@ -6,7 +7,7 @@
       <div class="col-md-9">
         <!-- Вывод текста поста -->
         {% include "posts/post_item.html" with post=post %}
-        {% include "posts/comments.html" with get_post=selected_post form=form comments=selected_post.comments.all%}
+        {% include "posts/comments.html" %}
       </div>
     </div>
   </main>

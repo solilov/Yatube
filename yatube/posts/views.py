@@ -94,14 +94,21 @@ def add_comment(request, username, post_id):
     )
 
 
+@login_required
+def follow_index(request):
+    # информация о текущем пользователе доступна в переменной request.user
+    post_list = Post.objects.filter(author__following__user=request.user)
+    paginator = Paginator(post_list, settings.POST_PAGE)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request, "follow.html", {'page': page})
+
+
 def page_not_found(request, exception):
     # Переменная exception содержит отладочную информацию,
     # выводить её в шаблон пользователской страницы 404 мы не станем
     return render(
-        request,
-        "misc/404.html",
-        {"path": request.path},
-        status=404
+        request, "misc/404.html", {"path": request.path}, status=404
     )
 
 
