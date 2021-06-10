@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, PostForm
-from .models import Group, Post, User
+from .models import Follow, Group, Post, User
 
 
 def index(request):
@@ -32,9 +32,13 @@ def profile(request, username):
     paginator = Paginator(author_posts, settings.POST_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
+    following = False
+    if request.user.is_authenticated:
+        following = Follow.objects.filter(user=request.user, author=author)
     return render(request, 'posts/profile.html', {'author': author,
                                                   'count': posts_count,
-                                                  'page': page})
+                                                  'page': page,
+                                                  'following': following})
 
 
 def post_view(request, username, post_id):
@@ -101,7 +105,25 @@ def follow_index(request):
     paginator = Paginator(post_list, settings.POST_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, "follow.html", {'page': page})
+    return render(request, "posts/follow.html", {'page': page})
+
+
+@login_required
+def profile_follow(request, username):
+    author = get_object_or_404(User, username=username)
+    follow = Follow.objects.filter(user=request.user, author=author)
+    if not follow.exists() and request.user != author:
+        Follow.objects.create(user=request.user, author=author)
+    return redirect('profile', username=username)
+
+
+@login_required
+def profile_unfollow(request, username):
+    author = get_object_or_404(User, username=username)
+    follow = Follow.objects.filter(user=request.user, author=author)
+    if follow.exists() and request.user != author:
+        follow.delete()
+    return redirect('profile', username=username)
 
 
 def page_not_found(request, exception):
