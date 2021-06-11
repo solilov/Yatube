@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from posts.models import Group, Post, User
+from posts.models import Follow, Group, Post, User
 
 User = get_user_model()
 
@@ -39,6 +39,7 @@ class PostPagesTests(TestCase):
         )
         # Создадим запись в БД
         cls.user = User.objects.create(username='test_user')
+        cls.second = User.objects.create(username='second')
         cls.post1 = Post.objects.create(
             text='Тестовый текст',
             author=cls.user,
@@ -67,6 +68,8 @@ class PostPagesTests(TestCase):
         # Создаем авторизованный клиент
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
+        self.authorized_client2 = Client()
+        self.authorized_client2.force_login(self.second)
 
     # Проверяем используемые шаблоны
     def test_pages_use_correct_template(self):
@@ -201,6 +204,68 @@ class PostPagesTests(TestCase):
         response_three = self.guest_client.get(reverse('index'))
         self.assertEqual(response_start.content, response_test_cache.content)
         self.assertNotEqual(response_start.content, response_three.content)
+
+    def test_authorized_client_can_subscribe(self):
+        """
+        Проверка, что авторизованный пользователь
+        может подписываться на других
+        """
+        follower_count = PostPagesTests.user.following.filter(
+            user=PostPagesTests.second).exists()
+        # Делаем подписку
+        Follow.objects.create(
+            user=PostPagesTests.second,
+            author=PostPagesTests.user
+        )
+        follower_count_two = PostPagesTests.user.following.filter(
+            user=PostPagesTests.second).exists()
+        self.assertEqual(follower_count_two, follower_count + 1)
+
+    def test_authorized_client_can_unsubscribe(self):
+        """
+        Проверка, что авторизованный пользователь
+        может удалять автора из подписок
+        """
+        # Делаем подписку
+        Follow.objects.create(
+            user=PostPagesTests.second,
+            author=PostPagesTests.user
+        )
+        follower_count = PostPagesTests.user.following.filter(
+            user=PostPagesTests.second).exists()
+        Follow.objects.filter(
+            user=PostPagesTests.second, author=PostPagesTests.user
+        ).delete()
+        follower_count_two = PostPagesTests.user.following.filter(
+            user=PostPagesTests.second).exists()
+        self.assertEqual(follower_count_two, follower_count - 1)
+
+    def test_new_post_in_follow_page_for_follower(self):
+        """
+        Проверка, что новый пост отображается в ленте избранных авторов,
+        если пользователь подписан на него.
+        """
+        # Делаем подписку
+        Follow.objects.create(
+            user=PostPagesTests.second,
+            author=PostPagesTests.user
+        )
+        # Создаем новый пост
+        Post.objects.create(author=PostPagesTests.user, text='test_text')
+        response = self.authorized_client2.get(reverse('follow_index'))
+        posts_count = len(response.context.get('page'))
+        self.assertEqual(posts_count, 3)
+
+    def test_new_post_in_follow_page_for_unfollower(self):
+        """
+        Проверка, что новый пост не отображается в ленте избранных авторов,
+        если пользователь не подписан на него.
+        """
+        # Создаем новый пост
+        Post.objects.create(author=PostPagesTests.user, text='test_text')
+        response = self.authorized_client2.get(reverse('follow_index'))
+        posts_count = len(response.context.get('page'))
+        self.assertEqual(posts_count, 0)
 
 
 class PaginatorViewsTest(TestCase):

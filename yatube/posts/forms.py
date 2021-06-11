@@ -5,6 +5,7 @@ from .models import Comment, Post
 
 
 class PostForm(ModelForm):
+    """ Форма постов """
     class Meta:
         model = Post
         fields = ('text', 'group', 'image')
@@ -24,6 +25,7 @@ class PostForm(ModelForm):
 
 
 class CommentForm(ModelForm):
+    """ Форма комментариев """
     class Meta:
         model = Comment
         fields = ('text',)

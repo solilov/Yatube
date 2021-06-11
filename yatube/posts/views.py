@@ -9,6 +9,7 @@ from .models import Follow, Group, Post, User
 
 
 def index(request):
+    """ Главная страница """
     post_list = Post.objects.all()
     paginator = Paginator(post_list, settings.POST_PAGE)
     page_number = request.GET.get('page')
@@ -17,6 +18,7 @@ def index(request):
 
 
 def group_posts(request, slug):
+    """ Страница группы """
     group = get_object_or_404(Group, slug=slug)
     posts = group.groups.all()
     paginator = Paginator(posts, settings.POST_PAGE)
@@ -26,6 +28,7 @@ def group_posts(request, slug):
 
 
 def profile(request, username):
+    """ Страница профиля автора со всеми постами """
     author = get_object_or_404(User, username=username)
     author_posts = author.posts.all()
     posts_count = author_posts.count()
@@ -42,10 +45,11 @@ def profile(request, username):
 
 
 def post_view(request, username, post_id):
+    """ Страница отдельного поста """
     author = get_object_or_404(User, username=username)
     posts_count = author.posts.count()
     post = author.posts.get(pk=post_id)
-    form = CommentForm
+    form = CommentForm()
     comments = post.comments.all()
     return render(request, 'posts/post.html', {'author': author,
                                                'count': posts_count,
@@ -56,6 +60,7 @@ def post_view(request, username, post_id):
 
 @login_required
 def new_post(request):
+    """ Страница с формой создания нового поста """
     form = PostForm(request.POST or None)
     if form.is_valid():
         post = form.save(commit=False)
@@ -67,6 +72,7 @@ def new_post(request):
 
 @login_required
 def post_edit(request, username, post_id):
+    """ Страница редактирования поста """
     post = get_object_or_404(Post, pk=post_id)
     if request.user != post.author:
         return redirect('post', username, post_id)
@@ -77,11 +83,13 @@ def post_edit(request, username, post_id):
         form.save()
         return redirect('post', username=username, post_id=post_id)
     return render(request, 'posts/new.html', {'form': form,
+                                              'post': post,
                                               'edit': True})
 
 
 @login_required
 def add_comment(request, username, post_id):
+    """ Страница добавления комментария """
     post = get_object_or_404(Post, author__username=username, pk=post_id)
     form = CommentForm(request.POST or None)
     if form.is_valid():
@@ -100,6 +108,7 @@ def add_comment(request, username, post_id):
 
 @login_required
 def follow_index(request):
+    """ Страница с избранными авторами """
     # информация о текущем пользователе доступна в переменной request.user
     post_list = Post.objects.filter(author__following__user=request.user)
     paginator = Paginator(post_list, settings.POST_PAGE)
@@ -110,6 +119,7 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
+    """ Подписка на автора """
     author = get_object_or_404(User, username=username)
     follow = Follow.objects.filter(user=request.user, author=author)
     if not follow.exists() and request.user != author:
@@ -119,6 +129,7 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
+    """ Отписка от автора """
     author = get_object_or_404(User, username=username)
     follow = Follow.objects.filter(user=request.user, author=author)
     if follow.exists() and request.user != author:
@@ -127,12 +138,12 @@ def profile_unfollow(request, username):
 
 
 def page_not_found(request, exception):
-    # Переменная exception содержит отладочную информацию,
-    # выводить её в шаблон пользователской страницы 404 мы не станем
+    """ Страница ошибки 404 """
     return render(
         request, "misc/404.html", {"path": request.path}, status=404
     )
 
 
 def server_error(request):
+    """ Страница ошибки 500 """
     return render(request, "misc/500.html", status=500)

@@ -33,7 +33,12 @@ class PostURLTests(TestCase):
             ),
             'profile': f'/{PostURLTests.user.username}/',
             'post': f'/{PostURLTests.user.username}/{PostURLTests.post.id}/',
-            'test': '/test_test/'
+            'test': '/test_test/',
+            'comment': (
+                f'/{PostURLTests.user.username}'
+                f'/{PostURLTests.post.id}'
+                f'/comment/'
+            )
         }
 
     def setUp(self):
@@ -118,3 +123,10 @@ class PostURLTests(TestCase):
             with self.subTest(adress=adress):
                 response = self.authorized_client.get(adress)
                 self.assertTemplateUsed(response, template)
+
+    def test_comment_post_available_non_authorized_client(self):
+        """
+        Страница /comments не доступна не авторизованному пользователю.
+        """
+        response = self.guest_client.get(self.urls['comment'])
+        self.assertNotEqual(response.status_code, 200)
