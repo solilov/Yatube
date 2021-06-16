@@ -1,4 +1,3 @@
-"""Запросы к БД"""
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -10,7 +9,7 @@ from .models import Follow, Group, Post, User
 
 def index(request):
     """ Главная страница """
-    post_list = Post.objects.all()
+    post_list = Post.objects.select_related('group').all()
     paginator = Paginator(post_list, settings.POST_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -24,7 +23,7 @@ def group_posts(request, slug):
     paginator = Paginator(posts, settings.POST_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, "posts/group.html", {"group": group, "page": page})
+    return render(request, 'posts/group.html', {'group': group, 'page': page})
 
 
 def profile(request, username):
@@ -37,7 +36,9 @@ def profile(request, username):
     page = paginator.get_page(page_number)
     following = False
     if request.user.is_authenticated:
-        following = Follow.objects.filter(user=request.user, author=author)
+        following = Follow.objects.filter(
+            user=request.user, author=author
+        ).exists()
     return render(request, 'posts/profile.html', {'author': author,
                                                   'count': posts_count,
                                                   'page': page,
@@ -48,7 +49,7 @@ def post_view(request, username, post_id):
     """ Страница отдельного поста """
     author = get_object_or_404(User, username=username)
     posts_count = author.posts.count()
-    post = author.posts.get(pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     form = CommentForm()
     comments = post.comments.all()
     return render(request, 'posts/post.html', {'author': author,
@@ -114,16 +115,15 @@ def follow_index(request):
     paginator = Paginator(post_list, settings.POST_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, "posts/follow.html", {'page': page})
+    return render(request, 'posts/follow.html', {'page': page})
 
 
 @login_required
 def profile_follow(request, username):
     """ Подписка на автора """
     author = get_object_or_404(User, username=username)
-    follow = Follow.objects.filter(user=request.user, author=author)
-    if not follow.exists() and request.user != author:
-        Follow.objects.create(user=request.user, author=author)
+    if request.user != author:
+        Follow.objects.get_or_create(user=request.user, author=author)
     return redirect('profile', username=username)
 
 
@@ -131,8 +131,8 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     """ Отписка от автора """
     author = get_object_or_404(User, username=username)
-    follow = Follow.objects.filter(user=request.user, author=author)
-    if follow.exists() and request.user != author:
+    follow = Follow.objects.get(user=request.user, author=author)
+    if request.user != author:
         follow.delete()
     return redirect('profile', username=username)
 
@@ -140,10 +140,10 @@ def profile_unfollow(request, username):
 def page_not_found(request, exception):
     """ Страница ошибки 404 """
     return render(
-        request, "misc/404.html", {"path": request.path}, status=404
+        request, 'misc/404.html', {'path': request.path}, status=404
     )
 
 
 def server_error(request):
     """ Страница ошибки 500 """
-    return render(request, "misc/500.html", status=500)
+    return render(request, 'misc/500.html', status=500)

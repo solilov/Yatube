@@ -3,10 +3,10 @@
 {% block content %}
 <main role="main" class="container">
     <div class="row">
-      {% include 'posts/author_post.html' %}
+      {% include 'includes/author_post.html' %}
       <div class="col-md-9">
         <!-- Вывод текста поста -->
-        {% include "posts/post_item.html" with post=post %}
+        {% include "includes/post_item.html" with post=post %}
         {% include "posts/comments.html" %}
       </div>
     </div>

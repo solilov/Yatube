@@ -5,11 +5,11 @@
 {% load cache %}
   <div class="container">
     
-    {% include "posts/menu.html" with index=True %}
+    {% include "includes/menu.html" with index=True %}
 
     {% cache 20 index_page %}
     {% for post in page %}
-      {% include "posts/post_item.html" with post=post %}
+      {% include "includes/post_item.html" with post=post %}
     {% endfor %}
     {% endcache %}
     

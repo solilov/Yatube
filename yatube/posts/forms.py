@@ -1,4 +1,3 @@
-from django import forms
 from django.forms import ModelForm, widgets
 
 from .models import Comment, Post
@@ -17,12 +16,6 @@ class PostForm(ModelForm):
             })
         }
 
-    def clean_text(self):
-        post = self.cleaned_data['text']
-        if not post:
-            raise forms.ValidationError('Добавьте пост')
-        return post
-
 
 class CommentForm(ModelForm):
     """ Форма комментариев """
@@ -36,10 +29,3 @@ class CommentForm(ModelForm):
                 'placeholder': 'Текст комментария'
             })
         }
-
-    def clean_text(self):
-        comment = self.cleaned_data['text']
-        if not comment:
-            raise forms.ValidationError(
-                "Не стоит добавлять пустой комментарий")
-        return comment

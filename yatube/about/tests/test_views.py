@@ -17,8 +17,8 @@ class AboutViewsTests(TestCase):
 
     def test_pages_uses_correct_template(self):
         pages = {
-            reverse('about:author'): 'author.html',
-            reverse('about:tech'): 'tech.html'
+            reverse('about:author'): 'about/author.html',
+            reverse('about:tech'): 'about/tech.html'
         }
         for key, values in pages.items():
             with self.subTest(values=values):

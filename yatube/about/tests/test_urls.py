@@ -28,8 +28,8 @@ class AboutURLTests(TestCase):
     def test_static_pages_uses_correct_template(self):
         """Cтатичные страницы используют соответствующий шаблон."""
         templates_url_names = {
-            '/about/author/': 'author.html',
-            '/about/tech/': 'tech.html',
+            '/about/author/': 'about/author.html',
+            '/about/tech/': 'about/tech.html',
         }
         for adress, template in templates_url_names.items():
             with self.subTest(adress=adress):

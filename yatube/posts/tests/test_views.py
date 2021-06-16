@@ -210,35 +210,36 @@ class PostPagesTests(TestCase):
         Проверка, что авторизованный пользователь
         может подписываться на других
         """
-        follower_count = PostPagesTests.user.following.filter(
-            user=PostPagesTests.second).exists()
-        # Делаем подписку
-        Follow.objects.create(
-            user=PostPagesTests.second,
-            author=PostPagesTests.user
-        )
-        follower_count_two = PostPagesTests.user.following.filter(
-            user=PostPagesTests.second).exists()
-        self.assertEqual(follower_count_two, follower_count + 1)
+        # Подписываем авторизованного клиента на автора
+        self.authorized_client2.get(reverse(
+            'profile_follow', kwargs={'username': PostPagesTests.user}
+        ))
+        follow = Follow.objects.all()[0]
+        # Проверем, что появился 1 подписчик и
+        # соответствие автора и подписчика
+        self.assertEqual(Follow.objects.count(), 1)
+        self.assertEqual(follow.author, PostPagesTests.user)
+        self.assertEqual(follow.user, PostPagesTests.second)
 
     def test_authorized_client_can_unsubscribe(self):
         """
         Проверка, что авторизованный пользователь
         может удалять автора из подписок
         """
-        # Делаем подписку
-        Follow.objects.create(
-            user=PostPagesTests.second,
-            author=PostPagesTests.user
-        )
-        follower_count = PostPagesTests.user.following.filter(
-            user=PostPagesTests.second).exists()
-        Follow.objects.filter(
-            user=PostPagesTests.second, author=PostPagesTests.user
-        ).delete()
-        follower_count_two = PostPagesTests.user.following.filter(
-            user=PostPagesTests.second).exists()
-        self.assertEqual(follower_count_two, follower_count - 1)
+        # Подписываем авторизованного клиента на автора
+        self.authorized_client2.get(reverse(
+            'profile_follow', kwargs={'username': PostPagesTests.user}
+        ))
+        # Проверяем кол-во подписчиков после подписки
+        after_subscribe = Follow.objects.count()
+        # Отписываем авторизованного клиента от автора
+        self.authorized_client2.get(reverse(
+            'profile_unfollow', kwargs={'username': PostPagesTests.user}
+        ))
+        # Проверяем кол-во подписчиков после отписки
+        after_unsubscribe = Follow.objects.count()
+        # Сравниваем кол-во подписчиков до и после
+        self.assertEqual(after_subscribe, after_unsubscribe + 1)
 
     def test_new_post_in_follow_page_for_follower(self):
         """
