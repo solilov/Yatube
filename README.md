@@ -34,6 +34,10 @@
 ```html
     pip install -r requirements.txt 
 ```
+- Создаем в корне приложения файл .env по аналогии с файлом .env.example
+```html
+    touch .env
+```
 - Собираем статические файлы
 ```html
     python manage.py collectstatic
