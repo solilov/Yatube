@@ -36,8 +36,6 @@ def host_list(string: str) -> list:
 ALLOWED_HOSTS = host_list(os.getenv('ALLOWED_HOSTS', ))
 
 
-# Application definition
-
 INSTALLED_APPS = [
     'about.apps.AboutConfig',
     'users.apps.UsersConfig',
