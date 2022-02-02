@@ -4,16 +4,12 @@
 {% block content %}
 {% load cache %}
   <div class="container">
-    
     {% include "includes/menu.html" with index=True %}
-
     {% cache 20 index_page %}
     {% for post in page %}
       {% include "includes/post_item.html" with post=post %}
     {% endfor %}
     {% endcache %}
-    
     {% include "includes/paginator.html" with items=page paginator=paginator %}
-
   </div>
 {% endblock %}
