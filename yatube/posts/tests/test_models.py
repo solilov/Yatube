@@ -17,9 +17,10 @@ class GroupModelsTest(TestCase):
         self.assertEqual(expected_object_name, str(group))
 
     def test_title_verbose_name_group(self):
-        """verbose_name поля title совпадает с ожидаемым."""
+        """
+        verbose_name поля title совпадает с ожидаемым.
+        """
         group = GroupModelsTest.group
-        # Получаем из свойста класса Gruop значение verbose_name для title
         verbose = group._meta.get_field('title').verbose_name
         self.assertEqual(verbose, 'Название группы')
 
