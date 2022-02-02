@@ -4,7 +4,9 @@ from .models import Group, Post
 
 
 class PostAdmin(admin.ModelAdmin):
-    """Админка для модели Post"""
+    """
+    Админка для модели Post.
+    """
     list_display = ('pk', 'text', 'pub_date', 'author', 'group')
     search_fields = ('text',)
     list_filter = ('pub_date',)
@@ -12,7 +14,9 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    """Админка для модели Group"""
+    """
+    Админка для модели Group.
+    """
     list_display = ('title', 'slug', 'description')
     search_fields = ("title",)
 

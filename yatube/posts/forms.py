@@ -4,7 +4,9 @@ from .models import Comment, Post
 
 
 class PostForm(ModelForm):
-    """ Форма постов """
+    """
+    Форма модели Post.
+    """
     class Meta:
         model = Post
         fields = ('text', 'group', 'image')
@@ -18,7 +20,9 @@ class PostForm(ModelForm):
 
 
 class CommentForm(ModelForm):
-    """ Форма комментариев """
+    """
+    Форма комментариев.
+    """
     class Meta:
         model = Comment
         fields = ('text',)

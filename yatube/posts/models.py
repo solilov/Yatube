@@ -19,7 +19,9 @@ class Group(models.Model):
 
 
 class Post(models.Model):
-    """Модель поста"""
+    """
+    Модель поста.
+    """
     text = models.TextField()
     pub_date = models.DateTimeField("date published", auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE,
@@ -29,7 +31,9 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
 
     class Meta:
-        """Дефолтная сортировка по дате(от послденего)"""
+        """
+        Дефолтная сортировка по дате(от послденего).
+        """
         ordering = ('-pub_date',)
 
     def __str__(self):
@@ -37,7 +41,9 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    """Модель комментариев"""
+    """
+    Модель комментариев.
+    """
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments'
     )
@@ -56,7 +62,9 @@ class Comment(models.Model):
 
 
 class Follow(models.Model):
-    """Модель подписок"""
+    """
+    Модель подписок.
+    """
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="follower"
     )
@@ -65,7 +73,9 @@ class Follow(models.Model):
     )
 
     class Meta:
-        """ Проверка на уникальность """
+        """
+        Проверка на уникальность.
+        """
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'], name='unique_follow'
